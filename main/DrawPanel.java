@@ -25,6 +25,7 @@ import model.CPCamera;
 public class DrawPanel extends JPanel{
     List<CPLine> cpLines = new ArrayList<>();
     CPCamera cpCamera = CPCamera.getInstance();
+    Point transformShowPoint = new Point(); // Only for showcasing transform point
 
     public DrawPanel(List<CPLine> cpCoords){
         super();
@@ -39,19 +40,16 @@ public class DrawPanel extends JPanel{
             @Override
             public void keyPressed(KeyEvent e) {
                 double transformAngle = cpCamera.getTransformAngle();
-                boolean ifRotated = false; // Gate check
 
                 // Handle left and right arrow keys
                 if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     cpCamera.addAngle(22.5);
-                    ifRotated = true;
                 } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
                     if (Math.abs(transformAngle - 0.0) < 1e-6) transformAngle = 360.0; 
                     cpCamera.addAngle(-22.5);
-                    ifRotated = true;
-                };
-
-                if(!ifRotated) return;
+                } else {
+                    return;
+                }
 
                 // Set to 0 if angle approaches 360
                 transformAngle = cpCamera.getTransformAngle();
@@ -65,12 +63,18 @@ public class DrawPanel extends JPanel{
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e){
-                Point p = cpCamera.Display2CPPoint(new Point(e.getX(), e.getY()));
+                double x = e.getX();
+                double y = e.getY();
+
+                Point p = cpCamera.Display2CPPoint(new Point(x, y));
                 cpCamera.setTransformX(p.getX());
                 cpCamera.setTransformY(p.getY());
 
-                cpCamera.setCameraX(e.getX());
-                cpCamera.setCameraY(e.getY());
+                transformShowPoint.setX(x);
+                transformShowPoint.setY(y);
+
+                cpCamera.setCameraX(x);
+                cpCamera.setCameraY(y);
                 repaint();
             }
 
@@ -115,8 +119,6 @@ public class DrawPanel extends JPanel{
                             RenderingHints.VALUE_ANTIALIAS_ON);
 
         Rectangle panelBound = this.getVisibleRect();
-        double cameraX = cpCamera.getCameraX();
-        double cameraY = cpCamera.getCameraY();
 
         // CP lines
         Line2D.Double line = new Line2D.Double();
@@ -132,13 +134,25 @@ public class DrawPanel extends JPanel{
             g2.draw(line);
         }
 
+        // Camera point & coords
+        double cameraX = cpCamera.getCameraX();
+        double cameraY = cpCamera.getCameraY();
+
         g2.setColor(Color.BLACK);
-
-        // Camera point
-        g2.fillOval((int) cameraX - 2, (int) cameraY - 2, 4, 4);
-
-        // Camera coords
         String mouseStr = "(" + cameraX + ", " + cameraY + ")";
         g2.drawString(mouseStr, (int) cameraX + 10, (int) cameraY);
+        g2.fillOval((int) cameraX - 2, (int) cameraY - 2, 4, 4);
+
+        // Transform point & coords
+        double transformX = transformShowPoint.getX();
+        double transformY = transformShowPoint.getY();
+
+        g2.setColor(Color.MAGENTA);
+        mouseStr = "(" + transformX + ", " + transformY + ")";
+        g2.drawString(mouseStr, (int) transformX + 10, (int) transformY);
+        g2.fillOval((int) transformX - 2, (int) transformY - 2, 4, 4);
+
+        // Visual connecting line
+        g2.draw(new Line2D.Double(transformX, transformY, cameraX, cameraY));
     }
 }
