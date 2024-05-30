@@ -1,5 +1,7 @@
 # Recreating Oriedita Camera...
 
+![](https://imgur.com/a/12UhfAR)
+
 ...kind of. I'm always intrigued by how [Oriedita](https://github.com/oriedita/oriedita) handles object transformation. Transforming a JPanel with lines on it can be expensive as the whole panel will still render, meaning that there will be a lot of unused areas outside the frame if zoomed in.
 
 Instead, the transformations are done onto the lines themselves, specifically tranforming the crease pattern lines and displaying them. This way, the original crease pattern lines' properties (mainly the absolute coordinates) are preserved, and directly drawing transformed lines is generally a lot less expensive when handled properly.
