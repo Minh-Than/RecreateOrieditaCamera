@@ -39,10 +39,11 @@ public class Main {
         
         JButton openFileBtn = new JButton("Open file");
         openFileBtn.addActionListener(e -> {
-            readFile(frame, cpLines);
-            cpCamera.initialize();
+            if(readFile(frame, cpLines) == true){
+                cpCamera.initialize();
+                mainPanel.repaint();
+            }
             mainPanel.requestFocus();
-            mainPanel.repaint();
         });
 
         JPanel buttonPanel = new JPanel();
@@ -59,9 +60,7 @@ public class Main {
         
     }
 
-    public static void readFile(JFrame frame, List<CPLine> cpLines){
-        if(cpLines.size() != 0) cpLines.clear();
-        
+    public static boolean readFile(JFrame frame, List<CPLine> cpLines){
         FileDialog fileDialog = new FileDialog(frame, "Select a file", FileDialog.LOAD);
 
         // Filter files with .cp extension
@@ -73,7 +72,12 @@ public class Main {
 
         fileDialog.setVisible(true);
 
-        if (fileDialog.getFile() == null) System.out.println("File selection cancelled.");
+        if (fileDialog.getFile() == null) {
+            System.out.println("File selection cancelled.");
+            return false;
+        }
+
+        if(cpLines.size() != 0) cpLines.clear();
         
         File test = new File(fileDialog.getDirectory(), fileDialog.getFile());
 
@@ -95,6 +99,8 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return true;
     }
 
     public static void setupDefaultSqaure(List<CPLine> cpLines){
