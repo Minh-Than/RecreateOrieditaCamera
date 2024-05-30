@@ -1,4 +1,4 @@
-package mainPkg;
+package main;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Test {
+public class Main {
     int mouseX, mouseY, displayOffsetX, displayOffsetY;
     
 
