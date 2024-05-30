@@ -11,7 +11,6 @@ import javax.swing.JButton;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.io.BufferedReader;
 import java.io.File;
