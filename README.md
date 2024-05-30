@@ -1,7 +1,7 @@
 # Recreating Oriedita Camera...
 
 
-https://github.com/Minh-Than/RecreateOrieditaCamera/assets/94136126/83b4ea4f-a867-4c5f-bea2-d76f0a7f62a2
+https://github.com/Minh-Than/RecreateOrieditaCamera/assets/94136126/faf37066-a458-4154-881e-0c972cf20357
 
 
 ...kind of. I'm always intrigued by how [Oriedita](https://github.com/oriedita/oriedita) handles object transformation. Transforming a JPanel with lines on it can be expensive as the whole panel will still render, meaning that there will be a lot of unused areas outside the frame if zoomed in.
