@@ -46,9 +46,16 @@ public class Main {
             mainPanel.requestFocus();
         });
 
+        JButton resetPosBtn = new JButton("Reset Position");
+        resetPosBtn.addActionListener(e -> {
+            cpCamera.initialize();
+            mainPanel.repaint();
+        });
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBorder(new MatteBorder(0, 0, 1, 0, Color.BLACK));
         buttonPanel.add(openFileBtn);
+        buttonPanel.add(resetPosBtn);
 
         frame.add(buttonPanel, BorderLayout.NORTH);
         frame.add(mainPanel, BorderLayout.CENTER);

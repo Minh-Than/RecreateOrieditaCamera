@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -12,7 +13,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +59,7 @@ public class DrawPanel extends JPanel{
                 // Set to 0 if angle approaches 360
                 transformAngle = cpCamera.getTransformAngle();
                 if(Math.abs(Math.abs(transformAngle) - 360.0) < 1e-6) transformAngle = 0.0;
+                cpCamera.setTransformAngle(transformAngle);
                 cpCamera.setSinCosRad(transformAngle);
 
                 repaint();
@@ -99,14 +105,10 @@ public class DrawPanel extends JPanel{
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                 double zoom = cpCamera.getTransformZoom();
-
-                int notches = e.getWheelRotation();
-                if (notches < 0) {
-                    cpCamera.setTransformZoom(zoom / 0.7);
-                } else {
-                    cpCamera.setTransformZoom(zoom * 0.7);
-                }
-
+                double zoomFactor = 0.1; // Customize this value for a smoother experience
+                double preciseNotches = e.getPreciseWheelRotation();
+                cpCamera.setTransformZoom(zoom * (1.0 - preciseNotches * zoomFactor));
+                
                 repaint();
             }
         });
@@ -119,9 +121,31 @@ public class DrawPanel extends JPanel{
                             RenderingHints.VALUE_ANTIALIAS_ON);
 
         Rectangle panelBound = this.getVisibleRect();
+        Line2D.Double line = new Line2D.Double();
+
+        double cameraX = cpCamera.getCameraX();
+        double cameraY = cpCamera.getCameraY();
+        double transformX = transformShowPoint.getX();
+        double transformY = transformShowPoint.getY();
 
         // CP lines
+        drawCPLines(g2, panelBound);
+
+        // Camera and transform points & coords
+        drawPoint(g2, cameraX, cameraY, Color.BLACK);
+        drawPoint(g2, transformX, transformY, Color.MAGENTA);
+
+        // Visual connecting line
+        line = new Line2D.Double(transformX, transformY, cameraX, cameraY);
+        g2.draw(line);
+
+        // Radar for angle and zooming
+        drawRadar(g2, cpCamera.getTransformZoom());
+    }
+
+    public void drawCPLines(Graphics2D g2, Rectangle2D panelBound){
         Line2D.Double line = new Line2D.Double();
+
         for(CPLine cpLine : cpLines){
             Point p1 = cpCamera.CP2DisplayPoint(cpLine.getP1());
             Point p2 = cpCamera.CP2DisplayPoint(cpLine.getP2());
@@ -133,26 +157,56 @@ public class DrawPanel extends JPanel{
             g2.setColor(cpLine.getLineType());
             g2.draw(line);
         }
+    }
 
-        // Camera point & coords
-        double cameraX = cpCamera.getCameraX();
-        double cameraY = cpCamera.getCameraY();
+    public void drawPoint(Graphics2D g2, double x, double y, Color color){
+        g2.setColor(color);
+        String mouseStr = "(" + x + ", " + x + ")";
+        g2.drawString(mouseStr, (int) x + 10, (int) y);
+        g2.fillOval((int) x - 2, (int) y - 2, 4, 4);
+    }
 
+    public void drawRadar(Graphics2D g2, double zoomFactor){
+        Line2D.Double line = new Line2D.Double();
+
+        // radar body
         g2.setColor(Color.BLACK);
-        String mouseStr = "(" + cameraX + ", " + cameraY + ")";
-        g2.drawString(mouseStr, (int) cameraX + 10, (int) cameraY);
-        g2.fillOval((int) cameraX - 2, (int) cameraY - 2, 4, 4);
+        g2.fillOval(10, 10, 150, 150);
 
-        // Transform point & coords
-        double transformX = transformShowPoint.getX();
-        double transformY = transformShowPoint.getY();
+        // angle arc and lateral grid 
+        g2.setColor(Color.orange);
+        g2.fill(FillArc(70.0, 70.0, 30.0, 30.0, 0.0, -cpCamera.getTransformAngle()));
+        g2.setColor(Color.GRAY);
+        line = new Line2D.Double(20.0, 85.0, 85.0 + 65.0, 85.0);
+        g2.draw(line);
+        line = new Line2D.Double(85.0, 20.0, 85.0, 85.0 + 65.0);
+        g2.draw(line);
 
-        g2.setColor(Color.MAGENTA);
-        mouseStr = "(" + transformX + ", " + transformY + ")";
-        g2.drawString(mouseStr, (int) transformX + 10, (int) transformY);
-        g2.fillOval((int) transformX - 2, (int) transformY - 2, 4, 4);
+        // radar circles
+        double interpolatedFactor = Math.log(zoomFactor + 1) % 1.0;
+        double zoomTLPos = 85 - 65 * interpolatedFactor;
+        double diameter = 130 * interpolatedFactor;
+        Ellipse2D.Double zoomRadar = new Ellipse2D.Double(zoomTLPos, zoomTLPos, diameter, diameter);
+        g2.draw(zoomRadar);
 
-        // Visual connecting line
-        g2.draw(new Line2D.Double(transformX, transformY, cameraX, cameraY));
+        // radar rim and angle line
+        g2.setColor(Color.WHITE);
+        g2.draw(new Ellipse2D.Double(20, 20, 130, 130));
+        line = new Line2D.Double(85.0, 85.0, 85.0 + (65 * cpCamera.getCosRad()), 85.0 + (65 * cpCamera.getSinRad()));
+        g2.draw(line);
+        g2.fillOval(82, 82, 6, 6);
+    }
+
+    public Shape FillArc(double x, double y, double width, double height, double startAngle, double endAngle){
+        Shape arc;
+        Path2D path = new Path2D.Double();
+
+        arc = new Arc2D.Double(x, y, width, height,startAngle, endAngle, Arc2D.PIE);
+        path.append(arc, true);
+        path.closePath();
+
+        arc = path;
+
+        return arc;
     }
 }
