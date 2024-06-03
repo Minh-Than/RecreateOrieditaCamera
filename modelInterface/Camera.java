@@ -87,6 +87,4 @@ public abstract class Camera {
     public void setTransformZoom(double transformZoom) {
         this.transformZoom = transformZoom;
     }
-
-    public abstract void initialize();
 }
