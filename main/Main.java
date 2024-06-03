@@ -14,17 +14,12 @@ import java.awt.Color;
 import java.awt.FileDialog;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Main {
-    int mouseX, mouseY, displayOffsetX, displayOffsetY;
-    
-
     public static void main(String[] argv){
         CPCamera cpCamera = CPCamera.getInstance();
 
@@ -39,7 +34,7 @@ public class Main {
         
         JButton openFileBtn = new JButton("Open file");
         openFileBtn.addActionListener(e -> {
-            if(readFile(frame, cpLines) == true){
+            if(readFile(frame, cpLines)){
                 cpCamera.initialize();
                 mainPanel.repaint();
             }
@@ -71,11 +66,7 @@ public class Main {
         FileDialog fileDialog = new FileDialog(frame, "Select a file", FileDialog.LOAD);
 
         // Filter files with .cp extension
-        fileDialog.setFilenameFilter(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".cp");
-            }
-        });
+        fileDialog.setFilenameFilter((dir, name) -> name.endsWith(".cp"));
 
         fileDialog.setVisible(true);
 
@@ -84,7 +75,7 @@ public class Main {
             return false;
         }
 
-        if(cpLines.size() != 0) cpLines.clear();
+        if(!cpLines.isEmpty()) cpLines.clear();
         
         File test = new File(fileDialog.getDirectory(), fileDialog.getFile());
 
@@ -101,7 +92,7 @@ public class Main {
                         Double.parseDouble(coords[4])
                     );
                 })
-                .collect(Collectors.toList())
+                .toList()
             );
         } catch (IOException e) {
             e.printStackTrace();
