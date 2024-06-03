@@ -73,7 +73,7 @@ public abstract class Camera {
         this.transformAngle = transformAngle;
     }
 
-    // Update sine and cosine of tranforming angle
+    // Update sine and cosine of transforming angle
     public void setSinCosRad(double cameraAngle){
         cameraRad = Math.toRadians(cameraAngle);
         sinRad = Math.sin(cameraRad);

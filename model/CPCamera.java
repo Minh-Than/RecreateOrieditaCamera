@@ -26,12 +26,12 @@ public class CPCamera extends Camera {
 
     /**
      *Convert a coordinate into a point in a transformable screen
-    - {x, y} can be rewritten as <rcosθ, rsinθ> from trigonometry (1)
-    - The rotated vector about an origin includes the change in angle(α), written as {rcos(θ+α), rsin(θ+α)}
-    - Use Ptolemy’s identities (https://www2.clarku.edu/faculty/djoyce/trig/identities.html)
-      to rewrite it to {rcosθcosα - rsinθsinα, rsinθcosα + rcosθsinα}
-    - Substitute rcosθ and rsinθ with x and y respectively from (1) to get the resulting vector expression:
-      {xcosα - ysinα, ycosα + xsinα}
+     - {x, y} can be rewritten as <rcosθ, rsinθ> from trigonometry (1)
+     - The rotated vector about an origin includes the change in angle(α), written as {rcos(θ+α), rsin(θ+α)}
+     - Use Ptolemy’s identities (<a href="https://www2.clarku.edu/faculty/djoyce/trig/identities.html">...</a>)
+     to rewrite it to {rcosθcosα - rsinθsinα, rsinθcosα + rcosθsinα}
+     - Substitute rcosθ and rsinθ with x and y respectively from (1) to get the resulting vector expression:
+     {xcosα - ysinα, ycosα + xsinα}
      * @param p object point
      * @return display point
      */

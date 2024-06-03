@@ -11,14 +11,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -28,7 +25,7 @@ import components.Point;
 import model.CPCamera;
 
 public class DrawPanel extends JPanel{
-    List<CPLine> cpLines = new ArrayList<>();
+    List<CPLine> cpLines;
     CPCamera cpCamera = CPCamera.getInstance();
     Point transformShowPoint = new Point(); // Only for showcasing transform point
 
@@ -44,13 +41,12 @@ public class DrawPanel extends JPanel{
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                double transformAngle = cpCamera.getTransformAngle();
+                double transformAngle;
 
                 // Handle left and right arrow keys
                 if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     cpCamera.addAngle(22.5);
                 } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    if (Math.abs(transformAngle - 0.0) < 1e-6) transformAngle = 360.0; 
                     cpCamera.addAngle(-22.5);
                 } else {
                     return;
@@ -101,16 +97,13 @@ public class DrawPanel extends JPanel{
             }
         });
 
-        addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                double zoom = cpCamera.getTransformZoom();
-                double zoomFactor = 0.1; // Customize this value for a smoother experience
-                double preciseNotches = e.getPreciseWheelRotation();
-                cpCamera.setTransformZoom(zoom * (1.0 - preciseNotches * zoomFactor));
-                
-                repaint();
-            }
+        addMouseWheelListener(e -> {
+            double zoom = cpCamera.getTransformZoom();
+            double zoomFactor = 0.1; // Customize this value for a smoother experience
+            double preciseNotches = e.getPreciseWheelRotation();
+            cpCamera.setTransformZoom(zoom * (1.0 - preciseNotches * zoomFactor));
+
+            repaint();
         });
     }
 
@@ -121,7 +114,7 @@ public class DrawPanel extends JPanel{
                             RenderingHints.VALUE_ANTIALIAS_ON);
 
         Rectangle panelBound = this.getVisibleRect();
-        Line2D.Double line = new Line2D.Double();
+        Line2D.Double line;
 
         double cameraX = cpCamera.getCameraX();
         double cameraY = cpCamera.getCameraY();
@@ -167,7 +160,7 @@ public class DrawPanel extends JPanel{
     }
 
     public void drawRadar(Graphics2D g2, double zoomFactor){
-        Line2D.Double line = new Line2D.Double();
+        Line2D.Double line;
 
         // radar body
         g2.setColor(Color.BLACK);
