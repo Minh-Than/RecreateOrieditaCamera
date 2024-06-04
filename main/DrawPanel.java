@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -23,20 +22,19 @@ import javax.swing.JPanel;
 import components.CPLine;
 import components.Point;
 import model.CPCamera;
+import model.FoldLineSet;
 
 public class DrawPanel extends JPanel{
-    List<CPLine> cpLines;
+    FoldLineSet foldLineSet = FoldLineSet.getInstance();
     CPCamera cpCamera = CPCamera.getInstance();
     Point transformShowPoint = new Point(); // Only for showcasing transform point
 
-    public DrawPanel(List<CPLine> cpCoords){
+    public DrawPanel(){
         super();
         setFocusable(true);
         requestFocus();
         setDoubleBuffered(true);
         setBackground(Color.WHITE);
-
-        this.cpLines = cpCoords;
 
         addKeyListener(new KeyAdapter() {
             @Override
@@ -110,8 +108,6 @@ public class DrawPanel extends JPanel{
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                            RenderingHints.VALUE_ANTIALIAS_ON);
 
         Rectangle panelBound = this.getVisibleRect();
         Line2D.Double line;
@@ -124,7 +120,7 @@ public class DrawPanel extends JPanel{
         // CP lines
         drawCPLines(g2, panelBound);
 
-        // Camera and transform points & coords
+        // Camera and transform points & coordinates
         drawPoint(g2, cameraX, cameraY, Color.BLACK);
         drawPoint(g2, transformX, transformY, Color.MAGENTA);
 
@@ -139,14 +135,21 @@ public class DrawPanel extends JPanel{
     public void drawCPLines(Graphics2D g2, Rectangle2D panelBound){
         Line2D.Double line = new Line2D.Double();
 
-        for(CPLine cpLine : cpLines){
+        drawLineType(g2, line, panelBound, foldLineSet.getAList());
+        drawLineType(g2, line, panelBound, foldLineSet.getVList());
+        drawLineType(g2, line, panelBound, foldLineSet.getMList());
+        drawLineType(g2, line, panelBound, foldLineSet.getEList());
+    }
+
+    public void drawLineType(Graphics2D g2, Line2D.Double line, Rectangle2D panelBound, List<CPLine> list){
+        for(CPLine cpLine : list){
             Point p1 = cpCamera.CP2DisplayPoint(cpLine.getP1());
             Point p2 = cpCamera.CP2DisplayPoint(cpLine.getP2());
 
             line.setLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 
             if(!panelBound.intersectsLine(line)) continue;
-            
+
             g2.setColor(cpLine.getLineType());
             g2.draw(line);
         }
@@ -167,7 +170,7 @@ public class DrawPanel extends JPanel{
         g2.fillOval(10, 10, 150, 150);
 
         // angle arc and lateral grid 
-        g2.setColor(Color.orange);
+        g2.setColor(Color.ORANGE);
         g2.fill(FillArc(70.0, 70.0, 30.0, 30.0, 0.0, -cpCamera.getTransformAngle()));
         g2.setColor(Color.GRAY);
         line = new Line2D.Double(20.0, 85.0, 85.0 + 65.0, 85.0);

@@ -8,7 +8,7 @@ import modelInterface.Camera;
  */
 public class CPCamera extends Camera {
 
-    private static CPCamera cpCamera = new CPCamera();
+    private static final CPCamera cpCamera = new CPCamera();
 
     private CPCamera(){ initialize(); }
 

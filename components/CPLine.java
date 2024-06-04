@@ -25,13 +25,12 @@ public class CPLine {
     public double getY2(){ return p2.getY(); }
 
     public Color getLineType(){
-        Color color = switch(lineType){
+        return switch(lineType){
             case 1 -> Color.BLACK;
             case 2 -> Color.RED;
             case 3 -> Color.BLUE;
             case 4 -> Color.CYAN;
             default -> throw new IllegalArgumentException("Unexpected value: " + lineType);
         };
-        return color;
     }
 }

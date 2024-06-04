@@ -6,6 +6,7 @@ import javax.swing.border.MatteBorder;
 
 import components.CPLine;
 import model.CPCamera;
+import model.FoldLineSet;
 
 import javax.swing.JButton;
 
@@ -14,27 +15,25 @@ import java.awt.Color;
 import java.awt.FileDialog;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     public static void main(String[] argv){
         CPCamera cpCamera = CPCamera.getInstance();
+        FoldLineSet foldLineSet = FoldLineSet.getInstance();
 
         JFrame frame = new JFrame("camera testing");
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLayout(new BorderLayout());
 
-        List<CPLine> cpLines = new ArrayList<>();
-        setupDefaultSqaure(cpLines);
+        setupDefaultSqaure(foldLineSet);
     
-        JPanel mainPanel = new DrawPanel(cpLines);
+        JPanel mainPanel = new DrawPanel();
         
         JButton openFileBtn = new JButton("Open file");
         openFileBtn.addActionListener(e -> {
-            if(readFile(frame, cpLines)){
+            if(readFile(frame, foldLineSet)){
                 cpCamera.initialize();
                 mainPanel.repaint();
             }
@@ -45,6 +44,7 @@ public class Main {
         resetPosBtn.addActionListener(e -> {
             cpCamera.initialize();
             mainPanel.repaint();
+            mainPanel.requestFocus();
         });
 
         JPanel buttonPanel = new JPanel();
@@ -62,7 +62,7 @@ public class Main {
         
     }
 
-    public static boolean readFile(JFrame frame, List<CPLine> cpLines){
+    public static boolean readFile(JFrame frame, FoldLineSet foldLineSet){
         FileDialog fileDialog = new FileDialog(frame, "Select a file", FileDialog.LOAD);
 
         // Filter files with .cp extension
@@ -75,37 +75,48 @@ public class Main {
             return false;
         }
 
-        if(!cpLines.isEmpty()) cpLines.clear();
+        if(!foldLineSet.getList().isEmpty()) foldLineSet.clear();
         
-        File test = new File(fileDialog.getDirectory(), fileDialog.getFile());
-
-        try (BufferedReader br = Files.newBufferedReader(test.toPath())) {
-            // Process lines using parallel stream for faster processing
-            cpLines.addAll(br.lines().parallel()
-                .map(line -> {
-                    String[] coords = line.split("\\s+");
-                    return new CPLine(
-                        Integer.parseInt(coords[0]),
-                        Double.parseDouble(coords[1]),
-                        Double.parseDouble(coords[2]),
-                        Double.parseDouble(coords[3]),
-                        Double.parseDouble(coords[4])
-                    );
-                })
-                .toList()
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        File file = new File(fileDialog.getDirectory(), fileDialog.getFile());
+        readFileLineByLine(file, foldLineSet);
 
         return true;
     }
 
-    public static void setupDefaultSqaure(List<CPLine> cpLines){
-        cpLines.add(new CPLine(1, -200.0, -200.0, 200.0, -200.0));
-        cpLines.add(new CPLine(1, -200.0, -200.0, -200.0, 200.0));
-        cpLines.add(new CPLine(1, -200.0, 200.0, 200.0, 200.0));
-        cpLines.add(new CPLine(1, 200.0, -200.0, 200.0, 200.0));
+
+    public static void readFileLineByLine(File file, FoldLineSet foldLineSet) {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                    String[] arr = line.split("\\s+");
+
+                    foldLineSet.append(new CPLine(Integer.parseInt(arr[0]),
+                            Double.parseDouble(arr[1]),
+                            Double.parseDouble(arr[2]),
+                            Double.parseDouble(arr[3]),
+                            Double.parseDouble(arr[4])
+                    ));
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) reader.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public static void setupDefaultSqaure(FoldLineSet foldLineSet){
+        foldLineSet.append(new CPLine(1, -200.0, -200.0, 200.0, -200.0));
+        foldLineSet.append(new CPLine(1, -200.0, -200.0, -200.0, 200.0));
+        foldLineSet.append(new CPLine(1, -200.0, 200.0, 200.0, 200.0));
+        foldLineSet.append(new CPLine(1, 200.0, -200.0, 200.0, 200.0));
     }
 }
  
