@@ -35,7 +35,7 @@ public Point object2TV(Point t_ob) {
 
 ### Step 1
 
-To get the object point to display properly, first we'll grab a vector between the object point and the camera position...
+To get the object point to display properly, first we'll grab a vector between the object point and the camera position (notated as <x1, y1>).
 
 ```java
 double x1 = t_ob.getX() - camera_position_x;
@@ -44,7 +44,7 @@ double y1 = t_ob.getY() - camera_position_y;
 
 ### Step 2
 
-...notated as [x1, y1]. This vector allows us to perform rotation/zoom/mirror about the origin of camera position. Below are such transformation:
+This vector allows us to perform rotation/zoom/mirror about the origin of camera position. Below are such transformation:
 
 ```java
 double x2 = cos_rad * x1 + sin_rad * y1;
