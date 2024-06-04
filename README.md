@@ -6,7 +6,7 @@ https://github.com/Minh-Than/RecreateOrieditaCamera/assets/94136126/faf37066-a45
 
 ...kind of. I'm always intrigued by how [Oriedita](https://github.com/oriedita/oriedita) handles object transformation. Transforming a JPanel with lines on it can be expensive as the whole panel will still render, meaning that there will be a lot of unused areas outside the frame if zoomed in.
 
-Instead, the transformations are done onto the lines themselves, specifically tranforming the crease pattern lines and displaying them. This way, the original crease pattern lines' properties (mainly the absolute coordinates) are preserved, and directly drawing transformed lines is generally a lot less expensive when handled properly.
+Instead, the transformations are done onto the lines themselves, specifically transforming the crease pattern lines and displaying them. This way, the original crease pattern lines' properties (mainly the absolute coordinates) are preserved, and directly drawing transformed lines is generally a lot less expensive when handled properly.
 
 ## How Oriedita handles the problem
 
@@ -71,9 +71,11 @@ For method `TV2object()`, the process is the opposite.
 
 How and when to update camera position and display position is also very important. How I understand it is through how we use the mouse.
 
-- `MousePressed()`: the crease pattern should not move or jump at all, so the camera and display positions should be the same. That's because step [1](#step-1) effectively (and temporarily) moves the object point to a new point, and by adding back the display position in step [3](#step-3) will only put it back to the original spot if both display and camera positions are the same. Therefore we'll simply update both of them to wherever the mouse is.
+- `MousePressed()`: the crease pattern should not move or jump at all, so the camera and display positions should be the same. That's because step [1](#step-1) effectively (and temporarily) moves the object point to a new point, and by adding back the display position in step [3](#step-3) will only put it back to the original spot if both display and camera positions are the same. Therefore, we'll simply update both of them to wherever the mouse is.
 - `MouseDragged()`: the crease pattern should move about the direction and distance of the display position relative to the camera position. Therefore, we'll only update the display position while dragging and step [3](#step-3) will apply properly.
 
 ### Step 5
 
 Now just grab those transformed lines and draw in `paintComponent()`, which is kinda laggy for some reason, so I'm not exactly finished with this project yet.
+
+Update: Switching to Intellij IDEA apparently solves that issue
