@@ -71,8 +71,8 @@ For method `TV2object()`, the process is the opposite.
 
 How and when to update camera position and display position is also very important. How I understand it is through how we use the mouse.
 
-- `MousePressed()`: the crease pattern should not move or jump at all, so the camera and display positions should be the same. That's because step [1](#step-1) effectively (and temporarily) moves the object point to a new point, and by adding back the display position in step [3](#step-3) will only put it back to the original spot if both display and camera positions are the same. Therefore, we'll simply update both of them to wherever the mouse is.
-- `MouseDragged()`: the crease pattern should move about the direction and distance of the display position relative to the camera position. Therefore, we'll only update the display position while dragging and step [3](#step-3) will apply properly.
+- `MousePressed()`: the crease pattern should not move or jump at all, so the camera and display positions should be the same. That's because initially [this](#step-1) effectively (and temporarily) moves the object point to a new point, and by adding back the display position [later on](#step-3) will only put it back to the original spot if both display and camera positions are the same. Therefore, we'll simply update both of them to wherever the mouse is.
+- `MouseDragged()`: the crease pattern should move about the direction and distance of the display position relative to the camera position. Therefore, we'll only update the display position while dragging and [this step](#step-3) will apply properly.
 
 ### Step 5
 
