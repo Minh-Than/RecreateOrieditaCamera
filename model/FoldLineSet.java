@@ -33,7 +33,7 @@ public class FoldLineSet {
 
     public List<CPLine> getAList() { return aList;}
 
-    public void append(CPLine cpLine){
+    public void appendLine(CPLine cpLine){
         if(cpLine == null) return;
 
         list.add(cpLine);
@@ -45,7 +45,7 @@ public class FoldLineSet {
         else if (lineType.equals(Color.CYAN)) aList.add(cpLine);
     }
 
-    public void clear(){
+    public void clearLists(){
         list.clear();
         eList.clear();
         mList.clear();

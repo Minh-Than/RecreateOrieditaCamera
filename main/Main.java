@@ -75,7 +75,7 @@ public class Main {
             return false;
         }
 
-        if(!foldLineSet.getList().isEmpty()) foldLineSet.clear();
+        if(!foldLineSet.getList().isEmpty()) foldLineSet.clearLists();
         
         File file = new File(fileDialog.getDirectory(), fileDialog.getFile());
         readFileLineByLine(file, foldLineSet);
@@ -92,7 +92,7 @@ public class Main {
             while ((line = reader.readLine()) != null) {
                     String[] arr = line.split("\\s+");
 
-                    foldLineSet.append(new CPLine(Integer.parseInt(arr[0]),
+                    foldLineSet.appendLine(new CPLine(Integer.parseInt(arr[0]),
                             Double.parseDouble(arr[1]),
                             Double.parseDouble(arr[2]),
                             Double.parseDouble(arr[3]),
@@ -102,21 +102,18 @@ public class Main {
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } finally {
-            try {
-                if (reader != null) reader.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            try { if (reader != null) reader.close(); }
+            catch (IOException ex) { System.out.println(ex.getMessage()); }
         }
     }
 
     public static void setupDefaultSqaure(FoldLineSet foldLineSet){
-        foldLineSet.append(new CPLine(1, -200.0, -200.0, 200.0, -200.0));
-        foldLineSet.append(new CPLine(1, -200.0, -200.0, -200.0, 200.0));
-        foldLineSet.append(new CPLine(1, -200.0, 200.0, 200.0, 200.0));
-        foldLineSet.append(new CPLine(1, 200.0, -200.0, 200.0, 200.0));
+        foldLineSet.appendLine(new CPLine(1, -200.0, -200.0, 200.0, -200.0));
+        foldLineSet.appendLine(new CPLine(1, -200.0, -200.0, -200.0, 200.0));
+        foldLineSet.appendLine(new CPLine(1, -200.0, 200.0, 200.0, 200.0));
+        foldLineSet.appendLine(new CPLine(1, 200.0, -200.0, 200.0, 200.0));
     }
 }
  
