@@ -39,19 +39,14 @@ public class DrawPanel extends JPanel{
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                double transformAngle;
+                double transformAngle = cpCamera.getTransformAngle();
 
                 // Handle left and right arrow keys
-                if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    cpCamera.addAngle(22.5);
-                } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    cpCamera.addAngle(-22.5);
-                } else {
-                    return;
-                }
+                if(e.getKeyCode() == KeyEvent.VK_RIGHT) { transformAngle += 22.5; }
+                else if(e.getKeyCode() == KeyEvent.VK_LEFT) { transformAngle -= 22.5;}
+                else { return; }
 
-                // Set to 0 if angle approaches 360
-                transformAngle = cpCamera.getTransformAngle();
+                // Reset to 0 if angle approaches full rotation
                 if(Math.abs(Math.abs(transformAngle) - 360.0) < 1e-6) transformAngle = 0.0;
                 cpCamera.setTransformAngle(transformAngle);
                 cpCamera.setSinCosRad(transformAngle);
