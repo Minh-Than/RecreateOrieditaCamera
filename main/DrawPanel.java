@@ -152,7 +152,7 @@ public class DrawPanel extends JPanel{
 
     public void drawPoint(Graphics2D g2, double x, double y, Color color){
         g2.setColor(color);
-        String mouseStr = "(" + x + ", " + x + ")";
+        String mouseStr = "(" + x + ", " + y + ")";
         g2.drawString(mouseStr, (int) x + 10, (int) y);
         g2.fillOval((int) x - 2, (int) y - 2, 4, 4);
     }
